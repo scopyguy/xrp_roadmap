@@ -1,0 +1,2 @@
+C:/Users/DELL/xrp_roadmap/android/app/.cxx/Debug/6g215w72/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/DELL/xrp_roadmap/android/app/.cxx/Debug/6g215w72/armeabi-v7a/CMakeFiles/rebuild_cache.dir
