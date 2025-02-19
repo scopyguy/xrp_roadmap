@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
+
+import 'in_app_purchase.dart';
+import 'snake_game.dart'; // Ensure this file exists
 
 void main() {
-  runApp(MemeTokenRoadmapApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TokenSystem()),
+        Provider(create: (_) => InAppPurchaseService()..init()),
+      ],
+      child: MemeTokenRoadmapApp(),
+    ),
+  );
 }
 
 class MemeTokenRoadmapApp extends StatelessWidget {
@@ -27,6 +39,9 @@ class MemeTokenRoadmapApp extends StatelessWidget {
         ),
       ),
       home: RoadmapScreen(),
+      routes: {
+        '/snake_game': (context) => SnakeGame(),
+      },
     );
   }
 }
@@ -47,8 +62,9 @@ class _RoadmapScreenState extends State<RoadmapScreen>
   final String telegramLinkUrl = 'https://t.me/XRPython';
 
   Future<void> _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
     } else {
       throw 'Could not launch $url';
     }
@@ -82,14 +98,16 @@ class _RoadmapScreenState extends State<RoadmapScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Introduction Section with Fade Animation
             FadeTransition(
               opacity: _fadeAnimation,
               child: Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.blueAccent, Colors.greenAccent],
+                    colors: [
+                      Colors.blueAccent,
+                      const Color.fromARGB(255, 121, 211, 168)
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -184,20 +202,44 @@ class _RoadmapScreenState extends State<RoadmapScreen>
                 'Develop utilities and use cases for the token.'),
             SizedBox(height: 20),
 
+            // Buttons Section
             Center(
-              child: ElevatedButton(
-                onPressed: () => _launchURL(buyTokenUrl),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orangeAccent,
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+              child: Column(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/snake_game');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orangeAccent,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      'Play Snake Game',
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
                   ),
-                ),
-                child: Text(
-                  'Buy Token',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () => _launchURL(buyTokenUrl),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orangeAccent,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      'Buy Token',
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 20),
@@ -209,7 +251,7 @@ class _RoadmapScreenState extends State<RoadmapScreen>
                 IconButton(
                   icon: Icon(Icons.link, color: Colors.blueAccent),
                   onPressed: () => _launchURL(xLinkUrl),
-                  tooltip: 'X (Twitter, ) Link',
+                  tooltip: 'X (Twitter) Link',
                 ),
                 IconButton(
                   icon: Icon(Icons.telegram, color: Colors.blueAccent),
@@ -252,5 +294,22 @@ class _RoadmapScreenState extends State<RoadmapScreen>
         ),
       ),
     );
+  }
+}
+
+// Token System Implementation
+class TokenSystem with ChangeNotifier {
+  int _tokens = 0;
+
+  int get tokens => _tokens;
+
+  void earnTokens(int amount) {
+    _tokens += amount;
+    notifyListeners();
+  }
+
+  void spendTokens(int amount) {
+    _tokens -= amount;
+    notifyListeners();
   }
 }
