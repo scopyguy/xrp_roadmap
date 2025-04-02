@@ -39,6 +39,11 @@ dependencies:
   url_launcher: ^6.3.1
   provider: ^6.1.2
   in_app_purchase: ^3.2.1
+  flame: ^1.25.0
+  
+  shared_preferences: ^2.5.2
+
+
 
 dev_dependencies:
   flutter_test:
@@ -65,6 +70,7 @@ flutter:
   
   assets:
     - assets/background.png
+    - assets/splash.gif.mp4
  
 
   # An image asset can refer to one or more resolution-specific "variants", see

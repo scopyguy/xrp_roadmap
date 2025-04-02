@@ -1,20 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:provider/provider.dart';
-
-import 'in_app_purchase.dart';
-import 'snake_game.dart'; // Ensure this file exists
+import 'snake_game.dart';
 
 void main() {
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => TokenSystem()),
-        Provider(create: (_) => InAppPurchaseService()..init()),
-      ],
-      child: MemeTokenRoadmapApp(),
-    ),
-  );
+  runApp(MemeTokenRoadmapApp());
 }
 
 class MemeTokenRoadmapApp extends StatelessWidget {
@@ -26,10 +15,10 @@ class MemeTokenRoadmapApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Meme Token Roadmap',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
         scaffoldBackgroundColor: Colors.white,
         appBarTheme: AppBarTheme(
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: Colors.greenAccent,
           elevation: 10,
           titleTextStyle: TextStyle(
             fontSize: 24,
@@ -38,10 +27,31 @@ class MemeTokenRoadmapApp extends StatelessWidget {
           ),
         ),
       ),
-      home: RoadmapScreen(),
+      home: SplashScreen(),
       routes: {
+        '/home': (context) => RoadmapScreen(),
         '/snake_game': (context) => SnakeGame(),
       },
+    );
+  }
+}
+
+class SplashScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    Future.delayed(Duration(seconds: 3), () {
+      Navigator.pushReplacementNamed(context, '/home');
+    });
+
+    return Scaffold(
+      body: Center(
+        child: Image.asset(
+          'assets/background.png',
+          width: 200,
+          height: 200,
+          fit: BoxFit.cover,
+        ),
+      ),
     );
   }
 }
@@ -93,6 +103,7 @@ class _RoadmapScreenState extends State<RoadmapScreen>
       appBar: AppBar(
         title: Text('Meme Token Roadmap'),
       ),
+      drawer: _buildDrawer(context),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -106,7 +117,7 @@ class _RoadmapScreenState extends State<RoadmapScreen>
                   gradient: LinearGradient(
                     colors: [
                       Colors.blueAccent,
-                      const Color.fromARGB(255, 121, 211, 168)
+                      Color.fromARGB(255, 121, 211, 168)
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -120,149 +131,469 @@ class _RoadmapScreenState extends State<RoadmapScreen>
                     ),
                   ],
                 ),
-                child: Text(
-                  "INTRODUCTION TO OUR TOKEN\n"
-                  "🐍 XRPython – The Fastest Snake on XRPL!\n"
-                  "📜 Overview\n"
-                  "XRPython is a meme-driven, community-controlled token built on the XRP Ledger (XRPL). Inspired by the Year of the Snake, XRPython represents speed, strategy, and unstoppable momentum in the crypto world. No team control, no VC funding—just pure meme energy and community takeover!\n\n"
-                  "📊 Tokenomics Breakdown\n"
-                  "🔹 Total Supply: 999,000,000,000 XPTN\n"
-                  "🔹 Liquidity at Launch: 100 XRP (for better price stability)\n"
-                  "🔹 Initial Price: ~ 1 XPTN = 0.0000000001 XRP (subject to market activity)\n"
-                  "🔹 Transaction Fees: 0% (XRPL has no native tax system!)\n"
-                  "🔹 Blockchain: XRP Ledger (XRPL) – fast, fee-less, and scalable\n\n"
-                  "🔹 Dev Token Allocation:\n\n"
-                  "50% of dev tokens burned (01/03/25) 🔥\n"
-                  "50% locked in escrow for 3 months (until Q2 2025) 🔒\n"
-                  "🔹 Play-to-Earn Utility:\n\n"
-                  "XRPython will launch a classic Snake Game in Q2 2025, allowing users to play and earn XPTN rewards!\n"
-                  "📅 Roadmap\n"
-                  "🐍 Phase 1: The Awakening (Q1 2025)\n"
-                  "✅ Website & Social Media Setup\n"
-                  "✅ Token Creation & Fair Launch on XRPL\n"
-                  "✅ Initial Liquidity Added (100 XRP)\n"
-                  "✅ Viral Meme & Community Building\n\n"
-                  "🔥 Phase 2: The Great Burn & Lock (01/03/2025)\n"
-                  "🚀 50% of Dev Tokens Burned 🔥\n"
-                  "🔒 50% Locked in Escrow for 3 Months\n"
-                  "💬 Community Voting & Future Proposals\n\n"
-                  "🎮 Phase 3: Play-to-Earn Game Launch (06/2025)\n"
-                  "🎮 XRPython Snake Game Goes Live – Earn XPTN while playing!\n"
-                  "🚀 Leaderboard Rewards & Competitions\n"
-                  "🌎 Community Expansion & Partnerships\n\n"
-                  "🐍 Phase 4: Future Growth & Enhancements (Late 2025 & Beyond)\n"
-                  "🔄 Potential Strategic Burns\n"
-                  "🌉 Possible Cross-Chain Bridges (if community votes)\n"
-                  "🎁 Community-Driven Events & NFT Ideas\n\n"
-                  "🔥 Why XRPython?\n"
-                  "✅ Pure Meme Energy – No Presale, No Team Control\n"
-                  "✅ Ultra-Fast, Fee-Less Transactions (Thanks to XRPL!)\n"
-                  "✅ Deflationary Tokenomics – Burn & Lock Strategy\n"
-                  "✅ Long-Term Vision – Play-to-Earn Utility Coming in 2025\n"
-                  "✅ Community Takeover – You Decide What’s Next!\n\n"
-                  "📢 Final Words:\n"
-                  "🐍 Slither fast, strike hard, and HODL tight—XRPython is here to shake up XRPL! 🚀\n\n"
-                  "Join the movement! #XRPython #SlitherFast #YearOfTheSnake",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                  ),
+                child: Column(
+                  children: [
+                    Text(
+                      '🐍 XRPython Cult',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'The Year of the Snake Begins! 🔥',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
             SizedBox(height: 20),
-
-            // Image Section
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                'assets/background.png',
-                fit: BoxFit.cover,
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/snake_game');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orangeAccent,
+                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                'Play Snake Game',
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () => _launchURL(buyTokenUrl),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orangeAccent,
+                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                'Buy Token',
+                style: TextStyle(fontSize: 18, color: Colors.white),
               ),
             ),
             SizedBox(height: 20),
-
-            // Roadmap Section
-            Text(
-              'Roadmap',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.blueAccent,
-              ),
+            _buildRoadmapItem(
+              '🟢 Phase 1: Foundation & Ecosystem Growth (Ongoing - Q1 2024)',
+              '''
+✅ Community Takeover & Expansion – Meme energy fuels the movement!
+✅ Venom Protocol Launch – Anti-scam verification system & Hiss List.
+✅ LP Rewards System – "The Snake Pit" launches with 1T XRPython allocated for liquidity providers.
+✅ Diamond Hands Reward System – Exclusive Telegram perks for long-term holders.
+✅ XRPL Strategic Collaborations – Partnerships with BOOXRPL & DCC, expanding beyond crypto.
+✅ Play-to-Earn Snake Game – Early Development – Bringing nostalgic gaming to blockchain.
+              ''',
             ),
-            SizedBox(height: 16),
-            _buildRoadmapItem('Phase 1: Token Launch',
-                'Launch the meme token and build the community.'),
-            _buildRoadmapItem('Phase 2: Marketing',
-                'Aggressive marketing on social media platforms.'),
-            _buildRoadmapItem('Phase 3: Partnerships',
-                'Partner with influencers and other projects.'),
-            _buildRoadmapItem('Phase 4: Ecosystem Expansion',
-                'Develop utilities and use cases for the token.'),
-            SizedBox(height: 20),
+            _buildRoadmapItem(
+              '🔵 Phase 2: The Rift Opens – Memes Made Real (Q2 2024 - Q1 2025)',
+              '''
+🛠️ 3D-Printed Meme Figures Begin Production
 
-            // Buttons Section
-            Center(
+First collectible: XRPython figure – The Golden Snake emerges from the rift!
+BOOXRPL Figure joins the cult – The haunting ghost materializes!
+Figures designed & produced in the Netherlands, expanding the real-world presence.
+🛍️ Webstore Development Begins
+
+Official XRPython Cult Store – Selling 3D-printed meme collectibles, exclusive merch & community-driven items.
+Sustainable funding model – Profits reinvested into ecosystem expansion & token stability.
+Cross-chain accessibility – Expanding XRPython beyond XRPL.
+📍 Interactive Roadmap App Launch
+
+Community-driven progress tracking.
+Voting system for future developments.
+Increased transparency & engagement.
+🎮 P2E Snake Game Development Continues
+
+Prototype gameplay testing.
+NFT-based skins & in-game customization.
+Earning mechanics for XPTN integration.
+🚀 More Strategic Partnerships
+
+Expanding Venom Protocol verification to more XRPL projects.
+More figure collaborations with meme-based projects.
+              ''',
+            ),
+            _buildRoadmapItem(
+              '🟣 Phase 3: The Grand Awakening (Q2 - Q4 2025 & Beyond)',
+              '''
+🔥 April 14, 2025 – XRPython Cult Webstore Grand Opening!
+
+Mass production of meme figures.
+New exclusive releases & limited-edition collectibles.
+First major launch event with community rewards!
+📈 Scaling Up Ecosystem Utility
+
+P2E Game Launch with XRPython Token Integration.
+Upgraded interactive roadmap with decentralized voting.
+Cross-chain expansion & NFT-based reward systems.
+👁️ The Cult Grows – More Rift Passages Open
+
+More meme tokens will be immortalized in reality!
+XRPython becomes a leader in blockchain-powered physical collectibles.
+The Meme Revolution of 2025 solidifies its mark.
+              ''',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/background.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.black.withOpacity(0.7), Colors.transparent],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
+              ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/snake_game');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orangeAccent,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: Text(
-                      'Play Snake Game',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                  Text(
+                    'XRPython Cult',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: () => _launchURL(buyTokenUrl),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orangeAccent,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: Text(
-                      'Buy Token',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                  SizedBox(height: 8),
+                  Text(
+                    'Welcome to the Movement',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 20),
-
-            // Social Links Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.link, color: Colors.blueAccent),
-                  onPressed: () => _launchURL(xLinkUrl),
-                  tooltip: 'X (Twitter) Link',
-                ),
-                IconButton(
-                  icon: Icon(Icons.telegram, color: Colors.blueAccent),
-                  onPressed: () => _launchURL(telegramLinkUrl),
-                  tooltip: 'Telegram Link',
-                ),
-              ],
+            ListTile(
+              leading: Icon(Icons.info, color: Colors.blueAccent),
+              title: Text('Introduction'),
+              onTap: () {
+                Navigator.pop(context);
+                _showIntro(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.map, color: Colors.blueAccent),
+              title: Text('Roadmap'),
+              onTap: () {
+                Navigator.pop(context);
+                _showRoadmap(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.gamepad, color: Colors.blueAccent),
+              title: Text('Game Section'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/snake_game');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.card_giftcard,
+                  color: const Color.fromARGB(255, 145, 181, 241)),
+              title: Text('Rewards'),
+              onTap: () {
+                Navigator.pop(context);
+                _showReward(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.people, color: Colors.blueAccent),
+              title: Text('Social'),
+              onTap: () {
+                Navigator.pop(context);
+                _showSocialLinks(context);
+              },
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showReward(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            "Snake Pit LP Reward Program",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "🚀 XRPython is growing, and we are rewarding those who help strengthen our liquidity! To ensure a stable and thriving market, we’re launching the Snake Pit LP Reward Program—where long-term liquidity providers (LPs) get rewarded monthly!",
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  "💎 1 TRILLION XRPython has been allocated for LP rewards over the next 10 months!",
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                ),
+                SizedBox(height: 24),
+                _buildRoadmapItem(
+                  '🐍 How It Works',
+                  '''
+✅ Provide liquidity in the official XRPython LP pool (XRPython + XRP).
+✅ Join the LP Provider Group Chat (Exclusive for LPs).
+✅ On the 1st of each month, submit a screenshot of your LP position & wallet address.
+✅ Our team verifies LPs and announces the Top 3 providers.
+✅ Rewards are distributed directly by the team!
+                ''',
+                ),
+                SizedBox(height: 16),
+                _buildRoadmapItem(
+                  '📢 Monthly Rewards Breakdown: 100 Billion XRPython per month!',
+                  '''
+🥇 1st Place LP: 50B XRPython (50%)
+🥈 2nd Place LP: 30B XRPython (30%)
+🥉 3rd Place LP: 20B XRPython (20%)
+                ''',
+                ),
+                SizedBox(height: 16),
+                Text(
+                  "⏳ The longer you provide liquidity, the higher your chances of earning rewards! This system favors long-term holders over short-term LP flippers.",
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text("Close"),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showIntro(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            "Introduction to XRPython",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "🐍 XRPython – The Fastest Snake on XRPL!\n\n"
+                  "📜 Overview\n"
+                  "XRPython is a meme-driven, community-controlled token built on the XRP Ledger (XRPL). "
+                  "Inspired by the Year of the Snake, XRPython represents speed, strategy, and unstoppable momentum!\n\n"
+                  "📊 Tokenomics Breakdown:\n"
+                  "🔹 Total Supply: 999,000,000,000 XPTN\n"
+                  "🔹 Initial Liquidity: 100 XRP\n"
+                  "🔹 Transaction Fees: 0%\n"
+                  "🔹 Blockchain: XRPL (fast & fee-less)\n\n"
+                  "🔥 Why XRPython?\n"
+                  "✅ No Presale, No Team Control\n"
+                  "✅ Fast, Fee-Less Transactions\n"
+                  "✅ Deflationary Tokenomics (Burn & Lock Strategy)\n"
+                  "✅ Play-to-Earn Game in 2025\n\n",
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text("Close"),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showRoadmap(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            "🐍 XRPython 2024-2025 Roadmap – The Year of the Snake Begins! 🔥",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 16),
+                Text(
+                  "XRPython is not just a token—it’s a movement. A fusion of digital and physical worlds, creating a self-sustaining ecosystem that goes beyond speculation. Here's a detailed roadmap based on all the initiatives in development!",
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                ),
+                SizedBox(height: 24),
+                _buildRoadmapItem(
+                  '🟢 Phase 1: Foundation & Ecosystem Growth (Ongoing - Q1 2024)',
+                  '''
+✅ Community Takeover & Expansion – Meme energy fuels the movement!
+✅ Venom Protocol Launch – Anti-scam verification system & Hiss List.
+✅ LP Rewards System – "The Snake Pit" launches with 1T XRPython allocated for liquidity providers.
+✅ Diamond Hands Reward System – Exclusive Telegram perks for long-term holders.
+✅ XRPL Strategic Collaborations – Partnerships with BOOXRPL & DCC, expanding beyond crypto.
+✅ Play-to-Earn Snake Game – Early Development – Bringing nostalgic gaming to blockchain.
+                ''',
+                ),
+                _buildRoadmapItem(
+                  '🔵 Phase 2: The Rift Opens – Memes Made Real (Q2 2024 - Q1 2025)',
+                  '''
+🛠️ 3D-Printed Meme Figures Begin Production
+
+First collectible: XRPython figure – The Golden Snake emerges from the rift!
+BOOXRPL Figure joins the cult – The haunting ghost materializes!
+Figures designed & produced in the Netherlands, expanding the real-world presence.
+🛍️ Webstore Development Begins
+
+Official XRPython Cult Store – Selling 3D-printed meme collectibles, exclusive merch & community-driven items.
+Sustainable funding model – Profits reinvested into ecosystem expansion & token stability.
+Cross-chain accessibility – Expanding XRPython beyond XRPL.
+📍 Interactive Roadmap App Launch
+
+Community-driven progress tracking.
+Voting system for future developments.
+Increased transparency & engagement.
+🎮 P2E Snake Game Development Continues
+
+Prototype gameplay testing.
+NFT-based skins & in-game customization.
+Earning mechanics for our XPTN integration.
+🚀 More Strategic Partnerships
+
+Expanding Venom Protocol verification to more XRPL projects.
+More figure collaborations with meme-based projects.
+                ''',
+                ),
+                _buildRoadmapItem(
+                  '🟣 Phase 3: The Grand Awakening (Q2 - Q4 2025 & Beyond)',
+                  '''
+🔥 April 14, 2025 – XRPython Cult Webstore Grand Opening!
+
+Mass production of meme figures.
+New exclusive releases & limited-edition collectibles.
+First major launch event with community rewards!
+📈 Scaling Up Ecosystem Utility
+
+P2E Game Launch with XRPython Token Integration.
+Upgraded interactive roadmap with decentralized voting.
+Cross-chain expansion & NFT-based reward systems.
+👁️ The Cult Grows – More Rift Passages Open
+
+More meme tokens will be immortalized in reality!
+XRPython becomes a leader in blockchain-powered physical collectibles.
+The Meme Revolution of 2025 solidifies its mark.
+                ''',
+                ),
+                SizedBox(height: 16),
+                Text(
+                  "🚀 The Future of XRPython – A True Meme Ecosystem",
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  "XRPython is leading the way in bridging memes, blockchain, and reality. No longer just a token, it is now a self-sustaining cultural movement with real-world presence.",
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  "🔗 From code to collectibles.\n🔥 From speculation to sustainability.\n🐍 From digital memes to real-world legends.",
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  "🚀 The Rift is Open – Will You Step Through?",
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  "🗓️ April 14, 2025 – The Next Phase Begins!",
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text("Close"),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showSocialLinks(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Social Links'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Icons.link, color: Colors.blueAccent),
+                title: Text('X (Twitter)'),
+                onTap: () => _launchURL(xLinkUrl),
+              ),
+              ListTile(
+                leading: Icon(Icons.telegram, color: Colors.blueAccent),
+                title: Text('Telegram'),
+                onTap: () => _launchURL(telegramLinkUrl),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -297,7 +628,6 @@ class _RoadmapScreenState extends State<RoadmapScreen>
   }
 }
 
-// Token System Implementation
 class TokenSystem with ChangeNotifier {
   int _tokens = 0;
 
@@ -312,4 +642,34 @@ class TokenSystem with ChangeNotifier {
     _tokens -= amount;
     notifyListeners();
   }
+}
+
+Widget _buildRoadmapItem(String title, String description) {
+  return Card(
+    elevation: 5,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.blueAccent,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            description,
+            style: TextStyle(color: Colors.black54),
+          ),
+        ],
+      ),
+    ),
+  );
 }
